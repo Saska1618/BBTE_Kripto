@@ -6,9 +6,30 @@ In 1-3 sentences per section, comment on your approach to each of the parts of t
 
 # Caesar Cipher
 
+Irtam egy segedfuggvenyt, aminek 3 parametere van : word, count, abc. Ez a fuggveny a 'word'-t 'count' darabbal
+forgatja el, pontosabban minden karaktert 'word'-bol, ami benne van az 'abc'-ben helyettesit a tole 'count'-ra levo megfelelojevel
+Mukodik pozitiv es negativ ertekekkel is. Az enkriptalasnal pozitiv iranyba forgatok ezzel, dekriptalasnal negativ iranyba. 
 
 # Vigenere Cipher
 
+A megadott kulcsot megfelelo hosszura nyuntom (addig ismetlem, mig megfelelo hosszu lesz), utana
+meghatarozom, hogy ebben a hosszu kulcsban melyik betu mekkora eltolast jelent. Vegul ezeket az eltolasokat
+alkalmazom a ceaser cipher-nel is hasznalt rotate_word segedfuggveny segitsegevel. dekriptalasnal hasonlokeppen
+jarok el, csak az eltolasok tombot beszorzom -1-gyel
 
-# Merkle-Hellman Knapsack Cryptosystem
+# Scytale
+
+enkriptalasnal megyek vegig a megadott szovegen ugy, hogy mindig circumference-nyi lepesekkel jarok,
+majd amikor mar nem tudok tovabb lepni (vege van az enkriptalando string-nek), a kezdeti karaktert
+utanira lepek, es ugyanigy folytatom. dekriptalasnal hasonloan, megyek vegig a string-en, azonban
+itt meghatarozott lepesnyi-eket ugrok, ezek lehetnek circumference-nyiek, vagy ennel 1-gyel nagyobbak
+abban az esetben, ha a szoveg hossza nem oszthato a circumference-el
+
+# Railfence
+
+meghatarozom, hogy enkriptalasnal mekkorakat kell lepjek, hogy az egyes rail-eknek megfelelo
+tavolsagokat hagyjam ki, majd hasonloan, mint a Scytale eseteben, lepkedek vegig a szovegen. 
+dekriptalasnal kezdetben meghatarozom a megfelelo permutaciot (egy adott hosszusagu szovegben
+a betuk milyen uj poziciokat vennenek fel) majd ennek a permutacionak megfeleloen visszakodolom a
+szoveget
 

@@ -4,21 +4,46 @@ File: crypto.py
 ---------------
 Assignment 1: Cryptography
 Course: CS 41
-Name: <YOUR NAME>
-SUNet: <SUNet ID>
+Name: Magyari-Saska Attila
+SUNet: maim2158
 
 Replace this with a description of the program.
 """
-import utils
+#import utils
+#import math
 
 # Caesar Cipher
+
+def rotate_word(word, count, abc):
+    '''
+        Rotates a 'word' by 'count' characters. Only rotates the characters that are in 'abc'
+    '''
+    new_word = ''
+    for char in word:
+        if char not in abc:
+            new_word += char
+        else:
+            index = abc.index(char)
+            index += count
+
+            if index < 0:
+                index = len(abc) + index
+            elif index >= len(abc):
+                index = index - len(abc)
+
+            new_word += abc[index]
+
+    return new_word
 
 def encrypt_caesar(plaintext):
     """Encrypt plaintext using a Caesar cipher.
 
     Add more implementation details here.
     """
-    raise NotImplementedError  # Your implementation here
+
+    abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    count = 3
+    return rotate_word(plaintext, count, abc)
 
 
 def decrypt_caesar(ciphertext):
@@ -26,17 +51,52 @@ def decrypt_caesar(ciphertext):
 
     Add more implementation details here.
     """
-    raise NotImplementedError  # Your implementation here
+    abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    count = -3
+    return rotate_word(ciphertext, count, abc)
 
 
 # Vigenere Cipher
+
+def make_keyword_long_enough(keyword, length):
+    '''
+        Makes the 'keyword' repeate until its length reaches 'length'
+    '''
+    final_key = keyword
+    orig_key_len = len(keyword)
+
+    for i in range(orig_key_len, length):
+        final_key += keyword[i % orig_key_len]
+    return final_key
+
+def keyword_to_shifts(keyword, abc):
+    '''
+        Determines how many shifts does each character mean in the 'keyword'
+        returns a list with this integer values
+    '''
+    shifts = []
+
+    for char in keyword:
+        shifts.append(abc.index(char))
+
+    return shifts
 
 def encrypt_vigenere(plaintext, keyword):
     """Encrypt plaintext using a Vigenere cipher with a keyword.
 
     Add more implementation details here.
     """
-    raise NotImplementedError  # Your implementation here
+
+    abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    new_word = ''
+    final_key = keyword_to_shifts(make_keyword_long_enough(keyword, len(plaintext)), abc)
+
+    for i, char in enumerate(plaintext):
+        new_word += rotate_word(char, final_key[i], abc)
+
+    return new_word
+
+    # raise NotImplementedError  # Your implementation here
 
 
 def decrypt_vigenere(ciphertext, keyword):
@@ -44,7 +104,17 @@ def decrypt_vigenere(ciphertext, keyword):
 
     Add more implementation details here.
     """
-    raise NotImplementedError  # Your implementation here
+
+    abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    new_word = ''
+    final_key = keyword_to_shifts(make_keyword_long_enough(keyword, len(ciphertext)), abc)
+
+    for i, char in enumerate(ciphertext):
+        new_word += rotate_word(char, -1 * final_key[i], abc)
+
+    return new_word
+
+    # raise NotImplementedError  # Your implementation here
 
 
 # Merkle-Hellman Knapsack Cryptosystem
@@ -62,7 +132,8 @@ def generate_private_key(n=8):
 
     You'll need to use the random module for this function, which has been imported already
 
-    Somehow, you'll have to return all of these values out of this function! Can we do that in Python?!
+    Somehow, you'll have to return all of these values out of this function! 
+    Can we do that in Python?!
 
     @param n bitsize of message to send (default 8)
     @type n int
@@ -128,3 +199,103 @@ def decrypt_mh(message, private_key):
     """
     raise NotImplementedError  # Your implementation here
 
+
+def encrypt_scytale(plaintext, circumference):
+    '''
+        Encrypts scytale
+    '''
+    new_word = ''
+
+    for i in range(0, circumference):
+        for j in range(i, len(plaintext), circumference):
+            new_word += plaintext[j]
+
+    return new_word
+
+
+def decrypt_scytale(ciphertext, circumference):
+    '''
+        Decrypts scytale
+    '''
+    # return encrypt_scytale(ciphertext, math.ceil(len(ciphertext) / circumference))
+    new_word = ''
+    steps = [int(len(ciphertext) / circumference)] * circumference
+    for i in range(0, (len(ciphertext) % circumference)):
+        steps[i] += 1
+
+
+    for i in range(0, circumference):
+        k = i
+        count = 0
+        while k < len(ciphertext)and len(new_word) < len(ciphertext):
+            new_word += ciphertext[k]
+            k += steps[count]
+            count += 1
+
+    return new_word
+
+def get_steps_for_railfence(num_rails):
+    '''
+        Determines how many characters have to be jumped over for each rail - used when encoding
+    '''
+    steps = []
+
+    for i in range(int((num_rails+1)/2)):
+        steps.append((num_rails-i-1)*2)
+
+    # k = steps[int(len(steps)/2)]
+    rev_steps = steps[::-1]
+    if num_rails % 2 == 1:
+        rev_steps = rev_steps[1:]
+
+    steps = steps + rev_steps
+    return steps
+
+def encrypt_railfence(plaintext, num_rails):
+    '''
+        Encrypts railfence
+    '''
+    steps = get_steps_for_railfence(num_rails)
+    new_word = ''
+
+    for i in range(num_rails):
+        for j in range(i, len(plaintext), steps[i]):
+            new_word += plaintext[j]
+
+    return new_word
+
+def get_permutation(plainlist, num_rails):
+    '''
+        Determines how a word with len(plainlist) characters would be transformed
+        when encoded in railfence. Returns a list representing the permutation
+    '''
+    steps = get_steps_for_railfence(num_rails)
+    new_word = []
+
+    for i in range(num_rails):
+        for j in range(i, len(plainlist), steps[i]):
+            new_word.append(plainlist[j])
+
+    return new_word
+
+
+def decrypt_railfence(ciphertext, num_rails):
+
+    '''
+        Decrypts railfence
+    '''
+    original_order = []
+    for i in range(len(ciphertext)):
+        original_order.append(i)
+
+    print(original_order)
+
+    order = get_permutation(original_order, num_rails)
+    print(order)
+
+    new_word = ''
+
+    for i in range(len(ciphertext)):
+        index = order.index(i)
+        new_word += ciphertext[index]
+    return new_word
