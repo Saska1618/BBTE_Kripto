@@ -1,0 +1,2 @@
+method = solitaire
+key = b'\x06\x19\x01\t\x01'
