@@ -248,7 +248,15 @@ def get_steps_for_railfence(num_rails):
     if num_rails % 2 == 1:
         rev_steps = rev_steps[1:]
 
-    steps = steps + rev_steps
+    help_step = []
+
+    for i, step in enumerate(rev_steps):
+        help_step.append(steps[0] - step)
+
+    help_step[len(help_step)-1] = steps[0]
+
+    steps = steps + help_step
+    print(steps)
     return steps
 
 def encrypt_railfence(plaintext, num_rails):
@@ -258,9 +266,24 @@ def encrypt_railfence(plaintext, num_rails):
     steps = get_steps_for_railfence(num_rails)
     new_word = ''
 
-    for i in range(num_rails):
-        for j in range(i, len(plaintext), steps[i]):
-            new_word += plaintext[j]
+    for i in range(0, len(plaintext), steps[0]):
+        new_word += plaintext[i]
+
+    for i in range(1, num_rails-1):
+        k = i
+        count = 1
+        while k < len(plaintext):
+            new_word += plaintext[k]
+            
+            if count == 1:
+                k += steps[i]
+                count = 2
+            else:
+                k += steps[0] - steps[i]
+                count = 1
+
+    for i in range(num_rails-1, len(plaintext), steps[0]):
+        new_word += plaintext[i]
 
     return new_word
 
@@ -272,9 +295,24 @@ def get_permutation(plainlist, num_rails):
     steps = get_steps_for_railfence(num_rails)
     new_word = []
 
-    for i in range(num_rails):
-        for j in range(i, len(plainlist), steps[i]):
-            new_word.append(plainlist[j])
+    for i in range(0, len(plainlist), steps[0]):
+        new_word.append(plainlist[i])
+
+    for i in range(1, num_rails-1):
+        k = i
+        count = 1
+        while k < len(plainlist):
+            new_word.append(plainlist[k])
+            
+            if count == 1:
+                k += steps[i]
+                count = 2
+            else:
+                k += steps[0] - steps[i]
+                count = 1
+
+    for i in range(num_rails-1, len(plainlist), steps[0]):
+        new_word.append(plainlist[i])
 
     return new_word
 

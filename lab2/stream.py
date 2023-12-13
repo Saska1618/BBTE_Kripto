@@ -36,23 +36,26 @@ class StreamCipher:
 
         data = data.encode("utf-8")
 
-        print(f'encrypt encoded {data}')
+        #print(f'Data to encrypt : {data}')
 
 
         encrypted_data = bytearray()
         key_length = len(data)
 
         if key is None:
+
             key = self.generate_key(key_length)
+            #print(f'We had to generate a key: {key}')
 
             with open("./config.txt", "w") as file:
                     file.write("method = " + self.method + "\n")
                     file.write("key = " + str(key) + "\n")
 
         else:
-            key = key.encode('utf-8')
+            #print(f'The key is already generated: {key}')
+            key = eval(key)
 
-        print(type(data), type(key))
+        #print(type(data), type(key))
 
         for i, byte in enumerate(data):
             key_byte = key[i % key_length]
@@ -72,7 +75,7 @@ class StreamCipher:
                     if head == 'key':
                         key = line.split(' ')[2]
 
-        print(f'dec {type(data)}')
+        
 
         return self.encrypt(data, key)
 
@@ -180,12 +183,11 @@ def decrypt_solitaire(text, key):
 
 ### BLUM BLUM SHUB ###
 
-def blum_blum_shub(seed, n):
+def blum_blum_shub(n):
+    seed = 1443
     result = []
     x = seed
     for _ in range(n):
         x = (x ** 2) % (2 ** 16)
         result.append(x % 2)
-    return result
-
-print(blum_blum_shub, 10)
+    return bytes(result)
